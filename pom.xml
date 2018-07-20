@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'
+         xmlns='http://maven.apache.org/POM/4.0.0'
+         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ********************************************************** -->
+    <!-- *****BEGIN THINGS YOU NEED TO CHANGE FOR YOUR SERVICE***** -->
+    <!-- ********************************************************** -->
+
+    <!-- Project identification section -->
+    <groupId>com.twilio.interview.cloud-infrastructure</groupId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>cloud-infrastruture</artifactId>
+    <name>Cloud Infrastructure Coding Exercise Root Package</name>
+    <description>A simple model for cloud infrastructure management.</description>
+
+    <!-- This section tells Maven where the different parts of your project live -->
+    <modules>
+        <module>cloud-infrastructure-shell</module>
+        <module>cloud-infrastructure-model</module>
+        <module>cloud-infrastructure-impl</module>
+    </modules>
+
+    <!-- Jenkins uses these sections to build and release your project -->
+    <scm>
+        <connection>scm:git:git@code.hq.twilio.com:ykhodosh/java-coding-exercise.git</connection>
+        <url>scm:git:git@code.hq.twilio.com:ykhodosh/java-coding-exercise.git</url>
+        <developerConnection>scm:git:git@code.hq.twilio.com:ykhodosh/java-coding-exercise.git</developerConnection>
+    </scm>
+
+    <!-- This is where you put dependencies that every module in the project will use -->
+    <!-- At a minimum you need to have the DropWizard dependency here -->
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+    </dependencies>
+
+    <!-- ********************************************************** -->
+    <!-- *****END THINGS YOU NEED TO CHANGE FOR YOUR SERVICE******* -->
+    <!-- ********************************************************** -->
+
+    <!-- This tells Jenkins where to put your released builds -->
+    <distributionManagement>
+        <repository>
+            <id>twilio.internal.repo</id>
+            <name>Twilio Internal Repository</name>
+            <url>http://maven.dev.twilio.com/Jnana/internal-repo</url>
+        </repository>
+        <snapshotRepository>
+            <id>twilio.internal.snapshot.repo</id>
+            <name>Twilio internal snapshot repository</name>
+            <url>http://maven.dev.twilio.com/Jnana/internal-snapshot-repo</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- This section allows you to pull down Twilio libraries -->
+    <repositories>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+    <!-- This section controls how your project will be built.
+         You shouldn't have to modify this -->
+    <build>
+        <plugins>
+            <!-- Compilation-related plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <parallel>classes</parallel>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.3</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Default</threshold>
+                    <xmlOutput>true</xmlOutput>
+                    <!-- Optional directory to put findbugs xdoc xml report -->
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.4</version>
+                            <configuration>
+                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.8.1</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <version>2.4.0</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.8</version>
+                            <configuration>
+                                <enableRulesSummary>false</enableRulesSummary>
+                                <configLocation>checkstyle.xml</configLocation>
+                            </configuration>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
+    </build>
+</project>

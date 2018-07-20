@@ -1,0 +1,14 @@
+[
+    {
+      "type": "customer-portal",
+      "id": "HT12345aec7890",
+      "description": "Customer self service web site",
+      "size": "LARGE"
+    },
+    {
+      "type": "auth-service",
+      "id": "HT67890edf1234",
+      "description": "Account authentication service",
+      "size": "MEDIUM"
+    }
+]

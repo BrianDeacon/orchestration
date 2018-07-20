@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'
+         xmlns='http://maven.apache.org/POM/4.0.0'
+         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Tells Maven where the parent lives -->
+    <parent>
+        <groupId>com.twilio.interview.cloud-infrastructure</groupId>
+        <artifactId>cloud-infrastruture</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cloud-infrastruture-shell</artifactId>
+    <packaging>jar</packaging>
+    <name>cloud-infrastructure-shell</name>
+
+    <dependencies>
+        <!-- You will always need to include the protocol as a dependency -->
+        <dependency>
+            <groupId>com.twilio.interview.cloud-infrastructure</groupId>
+            <artifactId>cloud-infrastructure-model</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+    	    <groupId>com.googlecode.cliche</groupId>
+    	    <artifactId>cliche</artifactId>
+    	    <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Package your project up in a jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- *** DROPWIZARD SPECIFIC *** -->
+            <!-- This plugin packages your project in a "fat" jar This means that
+                all of the dependencies are packaged up along with your project in the jar
+                Much, much easier to deploy -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!-- compile for Java 1.6 -->
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.twilio.interview.cloudinfrastructure.shell.Main</mainClass>
+                    <arguments>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
