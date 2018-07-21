@@ -1,7 +1,11 @@
 package com.twilio.interview.cloudinfrastructure.model.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.twilio.interview.cloudinfrastructure.model.GroupType;
 import com.twilio.interview.cloudinfrastructure.model.HostSize;
 
@@ -10,7 +14,19 @@ public class GroupTypeImpl extends HostTypeImpl implements GroupType {
     private HostSize size;
     private int hostCount;
     private boolean activeOnBoot;
-    private List<GroupType> dependencies;
+    @JsonProperty("dependencies")
+    private List<GroupTypeImpl> dependencies;
+
+    public GroupTypeImpl() {}
+
+    public GroupTypeImpl(GroupType gt) {
+        this.size = gt.getSize();
+        this.hostCount = gt.getHostCount();
+        this.activeOnBoot = gt.isActiveOnBoot();
+        if (gt.getDependencies() != null && gt.getDependencies().size() > 0) {
+            this.dependencies = gt.getDependencies().stream().map(GroupTypeImpl::new).collect(Collectors.toList());
+        }
+    }
 
     @Override
     public HostSize getSize() {
@@ -40,12 +56,15 @@ public class GroupTypeImpl extends HostTypeImpl implements GroupType {
     }
 
     @Override
+    @JsonIgnore
     public List<GroupType> getDependencies() {
-        return dependencies;
+        if (dependencies == null) return Collections.emptyList();
+        return dependencies.stream().map(i -> {return i; }).collect(Collectors.toList());
     }
 
+    @JsonIgnore
     public void setDependencies(List<GroupType> dependencies) {
-        this.dependencies = dependencies;
+        this.dependencies = dependencies.stream().map(GroupTypeImpl::new).collect(Collectors.toList());
     }
 
     @Override

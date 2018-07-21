@@ -6,6 +6,7 @@ import com.twilio.interview.cloudinfrastructure.model.Host;
 import com.twilio.interview.cloudinfrastructure.model.HostType;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 public class FileManager {
@@ -26,12 +27,22 @@ public class FileManager {
         this.baseDir = baseDir;
     }
 
+    public FileManager(Serializer serializer) {
+        this(serializer, new File("."));
+    }
+
     public void saveHostTypes(List<HostType> hostTypes) {
         serializer.write(hostTypes, new File(baseDir, HOST_TYPES_FILE));
     }
 
     public List<HostType> loadHostTypes() {
-        return serializer.readHostTypes(new File(baseDir, HOST_TYPES_FILE));
+        return loadHostTypes(HOST_TYPES_FILE);
+    }
+
+    public List<HostType> loadHostTypes(String file) {
+        File f = new File(baseDir, file);
+        if (!f.exists()) return Collections.emptyList();
+        return serializer.readHostTypes(f);
     }
 
     public void saveHosts(List<Host> hosts) {
@@ -39,7 +50,13 @@ public class FileManager {
     }
 
     public List<Host> loadHosts() {
-        return serializer.readHosts(new File(baseDir, HOSTS_FILE));
+        return loadHosts(HOSTS_FILE);
+    }
+
+    public List<Host> loadHosts(String file) {
+        File f = new File(baseDir, file);
+        if (!f.exists()) return Collections.emptyList();
+        return serializer.readHosts(f);
     }
 
     public void saveGroups(List<Group> groups) {
@@ -47,7 +64,13 @@ public class FileManager {
     }
 
     public List<Group> loadGroups() {
-        return serializer.readGroups(new File(baseDir, GROUPS_FILE));
+        return loadGroups(GROUPS_FILE);
+    }
+
+    public List<Group> loadGroups(String file) {
+        File f = new File(baseDir, file);
+        if (!f.exists()) return Collections.emptyList();
+        return serializer.readGroups(f);
     }
 
     public void saveGroupTypes(List<GroupType> groupTypes) {
@@ -56,6 +79,12 @@ public class FileManager {
 
     public List<GroupType> loadGroupTypes() {
         return serializer.readGroupTypes(new File(baseDir, GROUP_TYPES_FILE));
+    }
+
+    public List<GroupType> loadGroupTypes(String file) {
+        File f = new File(baseDir, file);
+        if (!f.exists()) return Collections.emptyList();
+        return serializer.readGroupTypes(f);
     }
 
 

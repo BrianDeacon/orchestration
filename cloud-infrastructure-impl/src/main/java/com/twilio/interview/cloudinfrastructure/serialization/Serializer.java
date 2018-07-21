@@ -2,6 +2,7 @@ package com.twilio.interview.cloudinfrastructure.serialization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import com.twilio.interview.cloudinfrastructure.model.Group;
 import com.twilio.interview.cloudinfrastructure.model.GroupType;
 import com.twilio.interview.cloudinfrastructure.model.Host;
@@ -20,6 +21,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Serializer {
@@ -69,43 +71,25 @@ public class Serializer {
         }
     }
 
-    private <T> T safeRead(String s, Class<T> clazz) {
-        return safeRead(new StringReader(s), clazz);
-    }
-
     public List<Host> readHosts(File file) {
+        if (!file.exists()) return Collections.emptyList();
         return Arrays.asList(safeRead(file, HostImpl[].class));
     }
 
-    public List<Host> readHosts(String asString) {
-        return Arrays.asList(safeRead(asString, HostImpl[].class));
-    }
-
     public List<HostType> readHostTypes(File file) {
+        if (!file.exists()) return Collections.emptyList();
         return Arrays.asList(safeRead(file, HostTypeImpl[].class));
     }
 
-    public List<HostType> readHostTypes(String asString) {
-        try {
-            return Arrays.asList(objectMapper.readValue(asString, HostTypeImpl[].class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public List<Group> readGroups(File file) {
+        if (!file.exists()) return Collections.emptyList();
         return Arrays.asList(safeRead(file, GroupImpl[].class));
     }
 
-    public List<Group> readGroups(String asString) {
-        return Arrays.asList(safeRead(asString, GroupImpl[].class));
-    }
 
     public List<GroupType> readGroupTypes(File file) {
+        if (!file.exists()) return Collections.emptyList();
         return Arrays.asList(safeRead(file, GroupTypeImpl[].class));
     }
 
-    public List<GroupType> readGroupTypes(String asString) {
-        return Arrays.asList(safeRead(asString, GroupTypeImpl[].class));
-    }
 }

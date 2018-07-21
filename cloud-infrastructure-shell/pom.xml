@@ -27,6 +27,11 @@
     	    <artifactId>cliche</artifactId>
     	    <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.twilio.interview.cloud-infrastructure</groupId>
+            <artifactId>cloud-infrastructure-impl</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

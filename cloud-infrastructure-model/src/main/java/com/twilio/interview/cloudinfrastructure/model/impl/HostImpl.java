@@ -3,8 +3,30 @@ package com.twilio.interview.cloudinfrastructure.model.impl;
 import com.twilio.interview.cloudinfrastructure.model.Host;
 import com.twilio.interview.cloudinfrastructure.model.HostSize;
 import com.twilio.interview.cloudinfrastructure.model.HostState;
+import com.twilio.interview.cloudinfrastructure.model.state.HostTransition;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class HostImpl implements Host {
+
+    private Map<HostState, HostTransition> transitions = initTransitions();
+
+    private Map<HostState, HostTransition> initTransitions() {
+        Map<HostState, HostTransition> t = new HashMap<>();
+        t.put(HostState.CREATED, new HostTransition("Creating host", null, HostState.CREATED, () -> starting(HostState.CREATED), () -> finishing(HostState.CREATED)));
+        t.put(HostState.BOOTING, new HostTransition("Booting host", HostState.CREATED, HostState.BOOTING, () -> starting(HostState.BOOTING), () -> proceedTo(HostState.CONFIGURING)));
+        t.put(HostState.CONFIGURING, new HostTransition("Configuring host", HostState.BOOTING, HostState.CONFIGURING, () -> starting(HostState.CONFIGURING), () -> proceedTo(HostState.RUNNING)));
+        t.put(HostState.RUNNING, new HostTransition("Running host", HostState.CONFIGURING, HostState.RUNNING, () -> starting(HostState.RUNNING), () -> finishing(HostState.RUNNING)));
+        t.put(HostState.SHUTTING_DOWN, new HostTransition("Shutting down host", HostState.RUNNING, HostState.SHUTTING_DOWN, () -> starting(HostState.SHUTTING_DOWN), () -> proceedTo(HostState.SHUTDOWN)));
+        t.put(HostState.SHUTDOWN, new HostTransition("Host shut down", HostState.SHUTTING_DOWN, HostState.SHUTDOWN, () -> starting(HostState.SHUTDOWN), () -> finishing(HostState.SHUTDOWN)));
+        t.put(null, new HostTransition("Deactivating host", HostState.SHUTDOWN, null, () -> System.out.println("Deactivating"), () -> System.out.println("Deactivated")));
+        return Collections.unmodifiableMap(t);
+    }
+
+
 
     private String id;
     private String type;
@@ -79,28 +101,67 @@ public class HostImpl implements Host {
         this.active = active;
     }
 
+    private void starting(HostState target) {
+        System.out.println(String.format("State transition to %s begun", target.name()));
+    }
+
+    private void finishing(HostState target) {
+        System.out.println(String.format("State transition to %s complete", target.name()));
+    }
+
+    private void proceedTo(HostState target) {
+        HostTransition transition = transitions.get(target);
+        if (transition.getStartState() != this.state) {
+            String name = "start";
+            if (this.state != null) name = this.state.name();
+            throw new IllegalStateException(String.format("Cannot proceed to %s from %s", target.name(), name));
+        }
+        System.out.println(String.format("Proceeding to %s", target));
+        sleep(forAWhile());
+        if (transition.getOnStart() != null) {
+            transition.getOnStart().run();
+        }
+
+        this.state = target;
+
+        if (transition.getOnEnd() != null) {
+            new Thread(transition.getOnEnd()).start();
+        }
+    }
+
+    private void sleep(long howLong) {
+        try {
+            System.out.println(String.format("It's going to take %d ms", howLong));
+            Thread.sleep(howLong);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private long forAWhile() {
+        return (long)(new Random().nextDouble() * 3 * 1000);
+    }
+
     @Override
     public void boot() throws IllegalStateException {
-        // TODO Auto-generated method stub
-
+        proceedTo(HostState.BOOTING);
     }
 
     @Override
     public void activate() throws IllegalStateException {
-        // TODO Auto-generated method stub
-
+        proceedTo(HostState.CREATED);
+        this.setActive(true);
     }
 
     @Override
     public void deactivate() throws IllegalStateException {
-        // TODO Auto-generated method stub
-
+        proceedTo(null);
+        this.setActive(false);
     }
 
     @Override
     public void shutdown() throws IllegalStateException {
-        // TODO Auto-generated method stub
-
+        proceedTo(HostState.SHUTTING_DOWN);
     }
 
     @Override
